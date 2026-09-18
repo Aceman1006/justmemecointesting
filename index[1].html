@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ASCEND.exe</title>
+<meta name="description" content="She ascends when you buy. She descends when you sell. Do not anger a goddess with a chart.">
+<meta property="og:title" content="ASCEND.exe">
+<meta property="og:description" content="She ascends when you buy. She descends when you sell. Do not anger a goddess with a chart.">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+
+<!-- ════════ EDIT THIS BLOCK. NOTHING ELSE. ════════ -->
+<script>
+window.COIN = {
+  name:   "ASCEND",
+  ticker: "ASCEND",
+
+  // Leave "" until launch.  ?ca=<mint>  →  config.json  →  this line
+  ca: "",
+
+  links: {
+    x:        "https://x.com/yourhandle",
+    telegram: "",
+    buy:      ""        // "" → pump.fun/coin/<ca>, then the DEX pair after graduation
+  },
+
+  adminPin: "ascend",   // /?admin=ascend
+  demo: false           // fake trades for screenshots. OFF before launch. Or ?demo=1
+};
+</script>
+
+<style>
+:root{
+  --face:#2A1B3D; --face2:#3B2555; --hi:#8B6BB1; --sh:#150D20; --dk:#050208;
+  --title:#4B1E7A; --title2:#8E2FD1; --titleOff:#3A2C4A; --desk:#0B0416; --txt:#EFE6FF;
+  --gold:#E8C468;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+body{
+  background:radial-gradient(circle at 50% 30%, #1B0E30 0%, var(--desk) 65%);
+  font-family:Tahoma,Verdana,"MS Sans Serif",Geneva,sans-serif;
+  font-size:12px;color:var(--txt);
+  -webkit-font-smoothing:none;
+  user-select:none;
+}
+button{font-family:inherit;font-size:12px}
+
+.out{border:2px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);background:var(--face)}
+.in {border:2px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh)}
+.btn{
+  background:var(--face2);color:var(--txt);padding:3px 11px;cursor:pointer;
+  border:2px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);
+}
+.btn:active{border-color:var(--dk) var(--hi) var(--hi) var(--dk);padding:4px 10px 2px 12px}
+.btn:disabled{color:#6A5A80;text-shadow:1px 1px 0 rgba(0,0,0,.4);cursor:default}
+
+#desk{position:fixed;inset:0 0 34px 0;overflow:hidden}
+.icon{
+  position:absolute;width:76px;text-align:center;cursor:pointer;color:#fff;
+  font-size:11px;text-shadow:1px 1px 2px #000;padding:4px;
+}
+.icon .g{font-size:30px;line-height:1.1}
+.icon:focus,.icon.sel{background:rgba(140,60,220,.35);outline:1px dotted #fff}
+
+.win{position:absolute;background:var(--face);display:flex;flex-direction:column;
+  border:2px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);
+  box-shadow:0 0 26px rgba(150,60,220,.28), 1px 1px 0 rgba(0,0,0,.5)}
+.win.min{display:none}
+.tb{display:flex;align-items:center;gap:4px;padding:2px 3px;cursor:move;
+  background:linear-gradient(90deg,var(--title),var(--title2));color:#fff;font-weight:bold}
+.win.blur .tb{background:var(--titleOff)}
+.tb .t{flex:1;padding-left:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb .x{width:17px;height:15px;line-height:11px;text-align:center;font-weight:bold;
+  font-size:11px;padding:0;color:#fff;
+  border:2px solid;border-color:var(--hi) var(--dk) var(--dk) var(--hi);background:var(--face2);cursor:pointer}
+.body{flex:1;padding:6px;overflow:hidden;display:flex;flex-direction:column;min-height:0}
+.sunken{border:2px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh);background:#0D0618;min-height:0}
+
+#wGym{left:22px;top:18px;width:430px;height:430px}
+#wGym .body{padding:4px}
+#gymCanvas{display:block;width:100%;height:100%;background:#05020B;image-rendering:pixelated}
+.tierbar{display:flex;gap:6px;align-items:center;padding:4px 2px 2px;font-size:11px}
+.tierbar .tier{font-weight:bold;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:var(--gold)}
+
+#wStats{left:470px;top:18px;width:290px;height:236px}
+.stat{display:flex;justify-content:space-between;gap:8px;padding:2px 4px;font-size:11px}
+.stat b{font-weight:normal;color:#C9A6F0}
+.mcbig{font-size:26px;font-weight:bold;text-align:center;padding:6px 0 2px;letter-spacing:-1px;color:var(--gold)}
+.mcbig.up{color:#7CFFA0}.mcbig.down{color:#FF7A7A}
+.meter{height:16px;background:#0D0618;position:relative;overflow:hidden;margin:4px 2px;
+  border:2px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh)}
+.meter i{position:absolute;inset:0 auto 0 0;background:repeating-linear-gradient(90deg,var(--gold) 0 8px,#7A5A20 8px 10px);width:0;transition:width .35s}
+
+#wTape{left:470px;top:270px;width:290px;height:262px}
+#tape{flex:1;overflow-y:auto;font-family:"Courier New",monospace;font-size:11px;padding:2px;background:#0D0618}
+#tape div{padding:1px 3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#tape .buy{color:#7CFFA0}#tape .sell{color:#FF7A7A}
+#tape .new{background:#4B1E7A;color:#fff}
+
+#wCa{left:22px;top:462px;width:430px;height:120px}
+#caBox{padding:5px;background:#0D0618;font-family:"Courier New",monospace;font-size:12px;
+  word-break:break-all;user-select:text;cursor:text;color:var(--gold)}
+
+#wSpot{left:780px;top:18px;width:250px;height:230px}
+#spotText{padding:6px;background:#1B0E30;color:#E8DBFF;flex:1;overflow:auto;font-size:11.5px;line-height:1.45}
+
+#wAdmin{left:50%;top:20%;transform:translateX(-50%);width:400px;display:none;z-index:900}
+#wAdmin.on{display:flex}
+#adminIn{width:100%;font-family:"Courier New",monospace;font-size:12px;padding:4px;color:#000;
+  border:2px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh)}
+#adminJson{background:#0D0618;padding:5px;font-family:"Courier New",monospace;font-size:11px;
+  margin:6px 0 0;white-space:pre;overflow-x:auto;user-select:text;color:var(--gold)}
+
+.dlg{position:absolute;width:290px;z-index:800}
+.dlg .body{flex-direction:row;gap:10px;align-items:flex-start;padding:12px}
+.dlg .g{font-size:30px;line-height:1}
+.dlg .m{flex:1;font-size:12px;line-height:1.45}
+.dlg .f{display:flex;justify-content:center;padding:0 10px 10px}
+
+#bar{position:fixed;left:0;right:0;bottom:0;height:34px;background:var(--face);
+  border-top:2px solid var(--hi);display:flex;align-items:center;gap:4px;padding:3px;z-index:1000}
+#start{font-weight:bold;display:flex;align-items:center;gap:5px;padding:3px 9px}
+#tasks{flex:1;display:flex;gap:3px;overflow:hidden}
+#tasks .tk{max-width:150px;flex:1 1 auto;text-align:left;overflow:hidden;white-space:nowrap;
+  text-overflow:ellipsis;padding:3px 8px}
+#tasks .tk.act{border-color:var(--dk) var(--hi) var(--hi) var(--dk);background:var(--face2)}
+#tray{display:flex;align-items:center;gap:7px;padding:3px 9px;
+  border:2px solid;border-color:var(--sh) var(--hi) var(--hi) var(--sh)}
+#tray span{cursor:pointer}
+#menu{position:fixed;bottom:34px;left:3px;width:216px;display:none;z-index:1001}
+#menu.on{display:block}
+#menu .strip{position:absolute;left:0;top:0;bottom:0;width:26px;
+  background:linear-gradient(0deg,var(--title),var(--title2));
+  color:#fff;font-weight:bold;writing-mode:vertical-rl;transform:rotate(180deg);
+  text-align:center;padding:8px 0;letter-spacing:1px;font-size:14px}
+#menu ul{list-style:none;margin:0;padding:3px 3px 3px 29px}
+#menu li{padding:5px 8px;cursor:pointer;display:flex;gap:8px;align-items:center;color:#EFE6FF;text-decoration:none}
+#menu li:hover{background:var(--title2);color:#fff}
+#menu hr{margin:3px 4px;border:0;border-top:1px solid var(--sh);border-bottom:1px solid var(--hi)}
+
+@media(max-width:900px){
+  .icon{display:none}
+  .win{position:relative!important;left:auto!important;top:auto!important;
+    width:auto!important;max-width:none;margin:8px;transform:none!important}
+  #wGym{height:340px}#wStats{height:auto}#wTape{height:230px}#wSpot{height:180px}#wCa{height:auto}
+  #desk{overflow-y:auto;padding-bottom:10px}
+  #wAdmin{position:fixed!important;left:8px!important;right:8px!important;top:40px!important;width:auto!important}
+  .dlg{position:fixed!important;left:8px!important;right:8px!important;top:auto!important;bottom:44px!important;width:auto!important}
+}
+</style>
+</head>
+<body>
+
+<div id="desk">
+  <div class="icon" style="left:8px;top:8px" data-open="wGym"><div class="g">✨</div>ASCEND.exe</div>
+  <div class="icon" style="left:8px;top:92px" data-open="wStats"><div class="g">📊</div>Stats</div>
+  <div class="icon" style="left:8px;top:176px" data-open="wTape"><div class="g">🧾</div>Trades</div>
+  <div class="icon" style="left:8px;top:260px" data-open="wCa"><div class="g">📄</div>contract.txt</div>
+  <div class="icon" style="left:8px;top:344px" data-open="wSpot"><div class="g">🔮</div>Oracle</div>
+
+  <div class="win" id="wGym" data-title="ASCEND.exe — Divinity Monitor">
+    <div class="tb"><span class="t">ASCEND.exe — Divinity Monitor</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div class="sunken" style="flex:1"><canvas id="gymCanvas"></canvas></div>
+      <div class="tierbar">
+        <span class="tier" id="tier">STATUS: UNBORN</span>
+        <span id="reps" style="font-family:'Courier New',monospace">0 miracles</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="wStats" data-title="Stats">
+    <div class="tb"><span class="t">Stats</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div class="sunken" style="background:var(--face2);padding:4px">
+        <div class="mcbig" id="mcBig">$0</div>
+        <div style="text-align:center;font-size:10px;color:#C9A6F0;margin-bottom:4px">MARKET CAP</div>
+        <div class="stat"><span>Price</span><b id="sPrice">—</b></div>
+        <div class="stat"><span>5 min</span><b id="sChg">—</b></div>
+        <div class="stat"><span>Buys / sells</span><b id="sTx">—</b></div>
+        <div class="stat"><span>Liquidity</span><b id="sLiq">—</b></div>
+        <div class="stat"><span>Volume 24h</span><b id="sVol">—</b></div>
+        <div class="stat" style="margin-top:4px"><span>Power level</span><b id="sPump">0%</b></div>
+        <div class="meter"><i id="pumpBar"></i></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="wTape" data-title="Trades — live">
+    <div class="tb"><span class="t">Trades — live</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div class="sunken" style="flex:1;display:flex"><div id="tape"><div>Waiting for the first trade…</div></div></div>
+      <div style="display:flex;gap:6px;align-items:center;padding-top:5px;font-size:11px">
+        <span id="conn">● offline</span>
+        <button class="btn" id="sndBtn" style="margin-left:auto">Sound: off</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="wCa" data-title="contract.txt — Notepad">
+    <div class="tb"><span class="t">contract.txt — Notepad</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div class="sunken" style="flex:1"><div id="caBox">Not deployed yet. She has not yet descended.</div></div>
+      <div style="display:flex;gap:6px;padding-top:6px">
+        <button class="btn" id="copyBtn" disabled>Copy</button>
+        <button class="btn" id="chartBtn" disabled>Chart</button>
+        <button class="btn" id="buyBtn" disabled style="margin-left:auto;font-weight:bold">BUY</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="win" id="wSpot" data-title="Oracle">
+    <div class="tb"><span class="t">Oracle</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div class="sunken" style="flex:1;display:flex"><div id="spotText">Consulting the stars…</div></div>
+      <button class="btn" id="spotMore" style="margin-top:6px">Ask again</button>
+    </div>
+  </div>
+
+  <div class="win" id="wAdmin" data-title="Deploy contract">
+    <div class="tb"><span class="t">Deploy contract</span><button class="x" data-close>✕</button></div>
+    <div class="body">
+      <div style="margin-bottom:6px">Paste the mint address.</div>
+      <input id="adminIn" placeholder="Solana mint address" spellcheck="false" autocomplete="off">
+      <div id="adminErr" style="color:#FF7A7A;min-height:14px;padding:3px 0;font-size:11px"></div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap">
+        <button class="btn" id="aPrev">Preview here</button>
+        <button class="btn" id="aCopy">Copy config.json</button>
+        <button class="btn" id="aClear">Clear</button>
+      </div>
+      <pre id="adminJson">{
+  "ca": ""
+}</pre>
+      <div style="font-size:10.5px;color:#C9A6F0;margin-top:6px">
+        Save that as config.json beside index.html and commit. Live for everyone, no rebuild.
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="menu" class="out">
+  <div class="strip">ASCEND</div>
+  <ul>
+    <li id="mBuy">💰 Buy $<span id="mTick">ASCEND</span></li>
+    <li id="mX">🐦 Follow on X</li>
+    <li id="mChart">📈 Chart</li>
+    <hr>
+    <li id="mGym">✨ Open ASCEND.exe</li>
+    <li id="mTile">🪟 Reset windows</li>
+    <hr>
+    <li id="mOff">⏻ Shut Down…</li>
+  </ul>
+</div>
+
+<div id="bar">
+  <button class="btn" id="start">⊞ Start</button>
+  <div id="tasks"></div>
+  <div id="tray"><span id="trayS" title="Sound">🔇</span><span id="clock">--:--</span></div>
+</div>
+
+<script>
+(() => {
+"use strict";
+const C = window.COIN, $ = id => document.getElementById(id);
+const P = new URLSearchParams(location.search);
+const B58 = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+const num = v => { const x = Number(v); return isFinite(x) ? x : 0; };
+const money = v => { if(!v) return "$0"; const a=Math.abs(v);
+  if(a>=1e9) return "$"+(v/1e9).toFixed(2)+"B";
+  if(a>=1e6) return "$"+(v/1e6).toFixed(2)+"M";
+  if(a>=1e3) return "$"+(v/1e3).toFixed(1)+"K"; return "$"+v.toFixed(0); };
+const priceStr = p => { if(!p) return "—"; if(p>=1) return "$"+p.toFixed(4);
+  const s=p.toFixed(12).replace(/0+$/,""), m=s.match(/^0\.(0*)(\d{1,4})/);
+  return m?"$0."+m[1]+m[2]:"$"+p.toPrecision(4); };
+const shortAddr = a => a ? a.slice(0,4)+".."+a.slice(-4) : "a mortal";
+
+/* ── state ─────────────────────────────────── */
+const S = { ca:"", mc:0, price:0, chg5:0, liq:0, vol:0, buys5:0, sells5:0,
+  pairUrl:"", solUsd:0, wsOk:false, lastTrade:0, reps:0,
+  swole:0, target:0, flex:0, flinch:0, shake:0, pops:[], bolts:[] };
+
+/* ── window manager (identical mechanics) ─────────────── */
+let z = 10;
+const wins = [...document.querySelectorAll(".win")];
+function focusWin(w){
+  wins.forEach(x=>x.classList.add("blur"));
+  w.classList.remove("blur"); w.style.zIndex = ++z + 100; renderTasks();
+}
+function openWin(id){ const w=$(id); if(!w) return; w.classList.remove("min"); focusWin(w); }
+function closeWin(w){ w.classList.add("min"); renderTasks(); }
+wins.forEach(w=>{
+  w.addEventListener("pointerdown",()=>focusWin(w));
+  const btn = w.querySelector("[data-close]");
+  if(btn) btn.onclick = e => { e.stopPropagation(); closeWin(w); };
+  const tb = w.querySelector(".tb");
+  tb.addEventListener("pointerdown", e => {
+    if(e.target.closest("[data-close]")) return;
+    if(innerWidth < 900) return;
+    const r = w.getBoundingClientRect();
+    const ox = e.clientX - r.left, oy = e.clientY - r.top;
+    w.style.transform = "none";
+    const move = ev => {
+      w.style.left = Math.max(-40, Math.min(ev.clientX-ox, innerWidth-60)) + "px";
+      w.style.top  = Math.max(0,  Math.min(ev.clientY-oy, innerHeight-70)) + "px";
+    };
+    const up = () => { removeEventListener("pointermove",move); removeEventListener("pointerup",up); };
+    addEventListener("pointermove",move); addEventListener("pointerup",up);
+    e.preventDefault();
+  });
+});
+document.querySelectorAll(".icon").forEach(i=>{
+  i.ondblclick = i.onclick = () => openWin(i.dataset.open);
+});
+function renderTasks(){
+  const t=$("tasks"); t.innerHTML="";
+  wins.filter(w=>w.id!=="wAdmin").forEach(w=>{
+    const b=document.createElement("button");
+    b.className="btn tk"+(!w.classList.contains("min")&&!w.classList.contains("blur")?" act":"");
+    b.textContent=w.dataset.title;
+    b.onclick=()=>{ if(w.classList.contains("min")) openWin(w.id);
+      else if(!w.classList.contains("blur")) closeWin(w); else focusWin(w); };
+    t.appendChild(b);
+  });
+}
+const savedPos = wins.map(w=>({w,l:w.style.left,t:w.style.top}));
+$("mTile").onclick = () => { savedPos.forEach(p=>{ p.w.style.left=p.l; p.w.style.top=p.t;
+  p.w.style.transform=""; p.w.classList.remove("min"); }); closeMenu(); renderTasks(); };
+
+function closeMenu(){ $("menu").classList.remove("on"); }
+$("start").onclick = e => { e.stopPropagation(); $("menu").classList.toggle("on"); };
+addEventListener("pointerdown", e => { if(!e.target.closest("#menu,#start")) closeMenu(); });
+$("mGym").onclick = () => { openWin("wGym"); closeMenu(); };
+$("mX").onclick = () => { if(C.links.x) open(C.links.x,"_blank","noopener"); closeMenu(); };
+$("mChart").onclick = () => { if(S.pairUrl) open(S.pairUrl,"_blank","noopener");
+  else dialog("😐","No chart yet. She has not been summoned. Patience, mortal."); closeMenu(); };
+$("mBuy").onclick = () => { buy(); closeMenu(); };
+$("mOff").onclick = () => { closeMenu();
+  dialog("⏻","You cannot shut down. She is watching. If you leave, she descends.","Fine"); };
+$("mTick").textContent = C.ticker;
+
+/* ── dialogs ───────────────────────────────── */
+function dialog(glyph, msg, ok){
+  const d=document.createElement("div");
+  d.className="win dlg";
+  d.style.left = (innerWidth/2 - 145 + (Math.random()*90-45)) + "px";
+  d.style.top  = (innerHeight/2 - 90 + (Math.random()*110-55)) + "px";
+  d.style.zIndex = ++z + 500;
+  d.innerHTML = `<div class="tb"><span class="t">${C.name}.exe</span><button class="x">✕</button></div>
+    <div class="body"><div class="g">${glyph}</div><div class="m">${msg}</div></div>
+    <div class="f"><button class="btn" style="min-width:76px">${ok||"OK"}</button></div>`;
+  const kill = () => d.remove();
+  d.querySelector(".x").onclick = kill;
+  d.querySelector(".f .btn").onclick = kill;
+  $("desk").appendChild(d);
+  setTimeout(kill, 9000);
+}
+
+/* ── oracle lines ──────────────────────────── */
+const LINES = [
+  "The stars say you should have bought yesterday. The stars are unhelpful like that.",
+  "She does not sell. She has never sold. She does not know what selling is.",
+  "A halo grows one ring for every buyer who did not chicken out.",
+  "Someone sold 0.4 SOL and a wing feather fell out. It will grow back. Eventually.",
+  "The throne behind her is made of unrealized gains. Do not sit in it.",
+  "Every dip is a trial. Every trial is temporary. Every diamond hand is remembered.",
+  "She does not need a chart. She IS the chart.",
+  "The lightning is not decorative. The lightning is a warning.",
+  "Weak hands cannot ascend. This is not a metaphor, it is a game mechanic.",
+  "Her wingspan is directly proportional to your conviction, statistically speaking.",
+  "If the candle is red, she is simply resting. Gods do not panic sell.",
+  "You have been chosen to witness this. Buying is optional. Witnessing is not.",
+  "The bonding curve is a staircase to the heavens. Take the stairs.",
+  "She remembers every wallet that paper-handed her. She remembers everything.",
+  "Divinity is just market cap with better lighting."
+];
+let li = Math.floor(Math.random()*LINES.length);
+function spot(){ li = (li + 1 + Math.floor(Math.random()*3)) % LINES.length;
+  $("spotText").textContent = LINES[li]; }
+$("spotMore").onclick = spot; spot();
+setInterval(spot, 17000);
+
+/* ── tiers ─────────────────────────────────── */
+const TIERS = [
+  [0,        "UNBORN — no contract"],
+  [1,        "MORTAL — has a pulse, that's it"],
+  [15000,    "ACOLYTE — found a temple, still no wings"],
+  [50000,    "MINOR SPIRIT — glows faintly, unimpressive"],
+  [150000,   "VALKYRIE — first wing acquired"],
+  [400000,   "ARCHON — second wing, visible halo"],
+  [1000000,  "ASCENDED — full wingspan, throne unlocked"],
+  [3000000,  "CELESTIAL — lightning follows her mood"],
+  [10000000, "GODDESS OF THE MARKET — worshipped, feared, unbagholderable"],
+  [40000000, "COSMIC ENTITY — the chart now answers to her"]
+];
+function tierFor(mc){ let t=TIERS[0][1];
+  for(const [m,l] of TIERS) if(mc>=m) t=l; return t; }
+
+/* ── contract resolution ───────────────────── */
+async function resolveCA(){
+  const u=(P.get("ca")||"").trim(); if(B58.test(u)) return u;
+  const s=(localStorage.getItem("preview_ca")||"").trim(); if(B58.test(s)) return s;
+  try{ const r=await fetch("./config.json?t="+Date.now(),{cache:"no-store"});
+    if(r.ok){ const j=await r.json(); if(j&&B58.test((j.ca||"").trim())) return j.ca.trim(); } }catch(_){}
+  const c=(C.ca||"").trim(); return B58.test(c)?c:"";
+}
+
+/* ── DexScreener ───────────────────────────── */
+async function pollDex(){
+  if(!S.ca) return;
+  try{
+    const r=await fetch("https://api.dexscreener.com/latest/dex/tokens/"+S.ca,{cache:"no-store"});
+    if(!r.ok) throw 0;
+    const j=await r.json();
+    const ps=(j.pairs||[]).filter(p=>p.chainId==="solana");
+    if(!ps.length) return;
+    ps.sort((a,b)=>num(b.liquidity&&b.liquidity.usd)-num(a.liquidity&&a.liquidity.usd));
+    const p=ps[0];
+    S.price=num(p.priceUsd);
+    const nat=num(p.priceNative);
+    if(nat>0&&S.price>0) S.solUsd=S.price/nat;
+    if(!S.wsOk||!S.mc) S.mc=num(p.marketCap)||num(p.fdv);
+    S.chg5=num(p.priceChange&&p.priceChange.m5);
+    S.liq=num(p.liquidity&&p.liquidity.usd);
+    S.vol=num(p.volume&&p.volume.h24);
+    S.buys5=num(p.txns&&p.txns.m5&&p.txns.m5.buys);
+    S.sells5=num(p.txns&&p.txns.m5&&p.txns.m5.sells);
+    S.pairUrl=p.url||"";
+    paintStats();
+  }catch(_){}
+}
+
+/* ── PumpPortal live stream ────────────────── */
+let ws=null, tries=0, timer=null;
+function connectWS(){
+  if(!S.ca) return;
+  try{ ws&&ws.close(); }catch(_){}
+  try{ ws=new WebSocket("wss://pumpportal.fun/api/data"); }catch(_){ return retry(); }
+  ws.onopen=()=>{ tries=0; S.wsOk=true; conn();
+    ws.send(JSON.stringify({method:"subscribeTokenTrade",keys:[S.ca]})); };
+  ws.onmessage=ev=>{
+    let d; try{ d=JSON.parse(ev.data); }catch(_){ return; }
+    if(!d||typeof d!=="object") return;
+    const mint=d.mint||d.tokenMint||d.ca; if(mint&&mint!==S.ca) return;
+    const side=String(d.txType||d.type||d.side||"").toLowerCase();
+    if(side!=="buy"&&side!=="sell") return;
+    onTrade({ side,
+      sol:num(d.solAmount??d.sol_amount??d.amountSol),
+      who:d.traderPublicKey||d.trader_public_key||d.trader||d.user||"",
+      mcSol:num(d.marketCapSol??d.market_cap_sol) });
+  };
+  ws.onclose=()=>{ S.wsOk=false; conn(); retry(); };
+  ws.onerror=()=>{ try{ ws.close(); }catch(_){} };
+}
+function retry(){ clearTimeout(timer);
+  timer=setTimeout(connectWS, Math.min(1000*Math.pow(1.7,tries++),30000)); }
+function conn(){
+  const e=$("conn");
+  e.textContent = S.wsOk ? "● live" : "● reconnecting";
+  e.style.color = S.wsOk ? "#7CFFA0" : "#D8B94A";
+}
+
+const BIG_BUY = [
+  "%s just bought %v SOL. A second wing is forming.",
+  "%s offered %v SOL. The halo brightened. She approves, probably.",
+  "HUGE BUY. %s put in %v SOL. Lightning just arced off her staff.",
+  "%s: %v SOL. She ascended a full step. Do not look directly at the light.",
+  "%v SOL from %s. The throne behind her just grew a new spike. Ominous but good."
+];
+const BIG_SELL = [
+  "%s sold %v SOL. A feather detached and is now on fire, somehow.",
+  "%s dumped %v SOL. The lightning flickered red for a second. That's new.",
+  "%v SOL sold by %s. She has gone very, very still.",
+  "%s sold %v SOL. The halo dimmed. She is writing your wallet down."
+];
+const pick = a => a[Math.floor(Math.random()*a.length)];
+
+function onTrade(t){
+  S.lastTrade=Date.now();
+  if(t.mcSol>0&&S.solUsd>0) S.mc=t.mcSol*S.solUsd;
+  const usd=(t.sol>0&&S.solUsd>0)?t.sol*S.solUsd:0;
+  const mag=Math.min(Math.max(t.sol,0.02)/3,1);
+
+  if(t.side==="buy"){ S.reps++; S.flex=Math.min(S.flex+.35+mag*.7,1.6);
+    S.pops.push({txt:"+1 MIRACLE",c:"#7CFFA0",x:(Math.random()*.5+.25),y:.5,t:0});
+    if(mag>.5) S.bolts.push({t:0,side:1}); }
+  else { S.flinch=Math.min(S.flinch+.35+mag*.6,1.4); S.shake=Math.min(S.shake+mag,1);
+    S.pops.push({txt:"-1 MIRACLE",c:"#FF7A7A",x:(Math.random()*.5+.25),y:.5,t:0});
+    if(mag>.5) S.bolts.push({t:0,side:-1}); }
+
+  blip(t.side,mag);
+  if(t.sol>=1){
+    const tpl=pick(t.side==="buy"?BIG_BUY:BIG_SELL);
+    dialog(t.side==="buy"?"✨":"⚡",
+      tpl.replace("%s","<b>"+shortAddr(t.who)+"</b>").replace("%v",t.sol.toFixed(2)));
+  }
+
+  const tape=$("tape");
+  if(tape.dataset.v!=="1"){ tape.innerHTML=""; tape.dataset.v="1"; }
+  const row=document.createElement("div");
+  row.className=t.side+" new";
+  row.textContent=(t.side==="buy"?"BUY  ":"SELL ")+shortAddr(t.who)+
+    "  "+(t.sol?t.sol.toFixed(3)+" SOL":"")+(usd?"  "+money(usd):"");
+  tape.prepend(row);
+  setTimeout(()=>row.classList.remove("new"),700);
+  while(tape.children.length>80) tape.lastChild.remove();
+
+  paintStats();
+}
+
+function paintStats(){
+  const b=$("mcBig");
+  b.textContent=money(S.mc);
+  b.className="mcbig "+(S.chg5>0?"up":S.chg5<0?"down":"");
+  $("sPrice").textContent=priceStr(S.price);
+  $("sChg").textContent=S.chg5?(S.chg5>0?"+":"")+S.chg5.toFixed(2)+"%":"—";
+  $("sChg").style.color=S.chg5>0?"#7CFFA0":S.chg5<0?"#FF7A7A":"";
+  $("sTx").textContent=(S.buys5||S.sells5)?S.buys5+" / "+S.sells5:"—";
+  $("sLiq").textContent=money(S.liq);
+  $("sVol").textContent=money(S.vol);
+  const pct=Math.round(swoleFor(S.mc)*100);
+  $("sPump").textContent=pct+"%";
+  $("pumpBar").style.width=pct+"%";
+  $("tier").textContent="STATUS: "+tierFor(S.mc);
+  $("reps").textContent=S.reps+" miracle"+(S.reps===1?"":"s");
+  if(S.pairUrl){ $("chartBtn").disabled=false; }
+}
+function swoleFor(mc){
+  if(!mc||!S.ca) return 0;
+  return Math.min(Math.max((Math.log10(Math.max(mc,1))-4)/3.6,0),1);
+}
+
+/* ── sound ─────────────────────────────────── */
+let audio=null, snd=false;
+function toggleSnd(){
+  snd=!snd;
+  $("sndBtn").textContent="Sound: "+(snd?"on":"off");
+  $("trayS").textContent=snd?"🔊":"🔇";
+  if(snd&&!audio){ try{ audio=new (window.AudioContext||window.webkitAudioContext)(); }catch(_){} }
+  if(snd&&audio&&audio.state==="suspended") audio.resume();
+}
+$("sndBtn").onclick=toggleSnd; $("trayS").onclick=toggleSnd;
+function blip(side,mag){
+  if(!snd||!audio) return;
+  const o=audio.createOscillator(),g=audio.createGain(),t=audio.currentTime;
+  o.type=side==="buy"?"sine":"sawtooth";
+  o.frequency.setValueAtTime(side==="buy"?520+mag*560:220,t);
+  o.frequency.exponentialRampToValueAtTime(side==="buy"?1100:110,t+.16);
+  g.gain.setValueAtTime(Math.min(.025+mag*.05,.09),t);
+  g.gain.exponentialRampToValueAtTime(.0001,t+.22);
+  o.connect(g);g.connect(audio.destination);o.start(t);o.stop(t+.24);
+}
+
+/* ── the goddess ───────────────────────────── */
+const cv=$("gymCanvas"), cx=cv.getContext("2d");
+let W=0,H=0,DPR=1;
+function fit(){
+  DPR=Math.min(devicePixelRatio||1,2);
+  const r=cv.getBoundingClientRect();
+  W=r.width||300; H=r.height||300;
+  cv.width=Math.round(W*DPR); cv.height=Math.round(H*DPR);
+  cx.setTransform(DPR,0,0,DPR,0,0);
+}
+addEventListener("resize",fit);
+new ResizeObserver(fit).observe(cv);
+
+function draw(now){
+  requestAnimationFrame(draw);
+  if(!W) return;
+  const t=now/1000;
+  S.target=swoleFor(S.mc);
+  S.swole += (S.target-S.swole)*.05;
+  S.flex=Math.max(0,S.flex-.02);
+  S.flinch=Math.max(0,S.flinch-.02);
+  S.shake=Math.max(0,S.shake-.015);
+
+  const p=Math.min(S.swole + S.flex*.06 - S.flinch*.05, 1.2); // ascension progress 0..1.2
+
+  // starfield backdrop
+  cx.fillStyle="#05020B"; cx.fillRect(0,0,W,H);
+  const bgSeed=1337;
+  let rs=bgSeed;
+  const rnd=()=>{ rs^=rs<<13;rs>>>=0;rs^=rs>>17;rs^=rs<<5;rs>>>=0; return rs/4294967296; };
+  for(let i=0;i<70;i++){
+    const sx=rnd()*W, sy=rnd()*H, tw=.4+.6*Math.sin(t*1.5+i);
+    cx.fillStyle=`rgba(230,220,255,${.15+.35*Math.max(tw,0)})`;
+    cx.fillRect(sx,sy,1.4,1.4);
+  }
+  // floor glow / temple platform
+  const floorY=H*.86;
+  const fg=cx.createRadialGradient(W/2,floorY,4,W/2,floorY,W*.5);
+  fg.addColorStop(0,`rgba(180,120,255,${.28+.25*p})`); fg.addColorStop(1,"rgba(0,0,0,0)");
+  cx.fillStyle=fg; cx.fillRect(0,floorY-40,W,H-floorY+40);
+  cx.strokeStyle=`rgba(160,120,220,${.3+.3*p})`; cx.lineWidth=2;
+  cx.beginPath(); cx.ellipse(W/2,floorY,W*.34,7,0,0,Math.PI*2); cx.stroke();
+
+  // lightning bolts on big trades
+  for(let i=S.bolts.length-1;i>=0;i--){
+    const b=S.bolts[i]; b.t+=.05;
+    if(b.t>1){ S.bolts.splice(i,1); continue; }
+    cx.save(); cx.globalAlpha=Math.max(0,1-b.t)*.8;
+    cx.strokeStyle=b.side>0? "#D8C4FF" : "#FF6A6A"; cx.lineWidth=2;
+    let bx=W*(.15+rnd()*.7), by=0;
+    cx.beginPath(); cx.moveTo(bx,by);
+    for(let s=0;s<7;s++){ bx+=(rnd()-.5)*40; by+=H/8; cx.lineTo(bx,by); }
+    cx.stroke(); cx.restore();
+  }
+
+  const CXp=W/2, CYp=floorY - 6 - p*30;
+  const shakeX = S.shake*(Math.random()*5-2.5);
+  cx.save();
+  cx.translate(CXp+shakeX, CYp);
+  const U = Math.min(W,H)/300;
+  cx.scale(U,U);
+
+  const skin="#F0C9A0", skinD="#C79870", skinL="#FBE3C4";
+  const robeC="#5A2E8C", robeC2="#8B4FD1", goldC="#E8C468";
+
+  const scale = .78 + p*.5;                         // overall figure grows
+  const hover = Math.sin(t*1.1)*3*(1+p);             // floats higher as she ascends
+  const wingSpan = 10 + p*150;                       // wings: near zero → huge
+  const haloR    = 14 + p*22;
+  const staffLen = 40 + p*70;
+  const boltAlpha= Math.max(0, p-.55)*1.8;
+
+  cx.translate(0, -hover - p*46);
+  cx.scale(scale, scale);
+
+  // aura
+  const ag=cx.createRadialGradient(0,-40,4,0,-40,120+p*160);
+  ag.addColorStop(0,`rgba(210,160,255,${.10+.22*p})`); ag.addColorStop(1,"rgba(0,0,0,0)");
+  cx.fillStyle=ag; cx.beginPath(); cx.arc(0,-40,120+p*160,0,Math.PI*2); cx.fill();
+
+  // wings (behind body), pair of feathered arcs that grow from nothing
+  function wing(dir){
+    if(wingSpan<6) return;
+    cx.save();
+    cx.translate(dir*10,-56);
+    const n = 3 + Math.floor(p*4);
+    for(let i=n;i>=1;i--){
+      const f=i/n;
+      const len = wingSpan*f;
+      const ang = dir*(0.35 + f*0.55) + Math.sin(t*1.4+i)*0.05;
+      cx.save(); cx.rotate(ang);
+      cx.beginPath();
+      cx.moveTo(0,0);
+      cx.quadraticCurveTo(dir*len*.5, -len*.35, dir*len, -len*.15);
+      cx.quadraticCurveTo(dir*len*.65, len*.12, 0,0);
+      cx.closePath();
+      const wg=cx.createLinearGradient(0,0,dir*len,0);
+      wg.addColorStop(0,"rgba(230,210,255,.9)"); wg.addColorStop(1,"rgba(180,140,240,.15)");
+      cx.fillStyle=wg; cx.fill();
+      cx.strokeStyle="rgba(255,255,255,.5)"; cx.lineWidth=.8; cx.stroke();
+      cx.restore();
+    }
+    cx.restore();
+  }
+  wing(-1); wing(1);
+
+  // legs
+  cx.strokeStyle=skin; cx.lineCap="round"; cx.lineWidth=7;
+  [-1,1].forEach(d=>{ cx.beginPath(); cx.moveTo(d*9,-70); cx.lineTo(d*11,-24); cx.stroke(); });
+
+  // robe (flowing, wider at hem, glows more as p rises)
+  cx.beginPath();
+  cx.moveTo(-24,-150); cx.quadraticCurveTo(-40,-96,-52-p*10,-20);
+  cx.quadraticCurveTo(0,-8,52+p*10,-20);
+  cx.quadraticCurveTo(40,-96,24,-150);
+  cx.closePath();
+  const rg=cx.createLinearGradient(0,-150,0,-20);
+  rg.addColorStop(0,robeC2); rg.addColorStop(1,robeC);
+  cx.fillStyle=rg; cx.fill();
+  cx.strokeStyle=goldC; cx.lineWidth=1.6; cx.stroke();
+  // gold trim
+  cx.strokeStyle=goldC; cx.lineWidth=1.2; cx.globalAlpha=.8;
+  cx.beginPath(); cx.moveTo(-24,-150); cx.lineTo(-52-p*10,-20); cx.stroke();
+  cx.beginPath(); cx.moveTo(24,-150); cx.lineTo(52+p*10,-20); cx.stroke();
+  cx.globalAlpha=1;
+
+  // arms
+  function arm(dir){
+    const sx=dir*22, sy=-142;
+    const raise = Math.min(S.flex,1)*.5;
+    const ex = sx + dir*(20+p*10);
+    const ey = sy + 38 - raise*70*p*.6 - p*10;
+    cx.strokeStyle=skin; cx.lineCap="round"; cx.lineWidth=6.5;
+    cx.beginPath(); cx.moveTo(sx,sy); cx.lineTo(ex,ey); cx.stroke();
+    cx.beginPath(); cx.arc(ex,ey,4.4,0,Math.PI*2); cx.fillStyle=skinL; cx.fill();
+    return {ex,ey};
+  }
+  const rightHand = arm(1);
+  arm(-1);
+
+  // staff / weapon — absurdly oversized as p rises, held by right hand
+  if(p>.05){
+    const {ex,ey}=rightHand;
+    const len=staffLen;
+    cx.save();
+    cx.translate(ex,ey);
+    const sway=Math.sin(t*.8)*.04;
+    cx.rotate(-0.15+sway);
+    cx.strokeStyle=goldC; cx.lineWidth=2+p*2;
+    cx.beginPath(); cx.moveTo(0,4); cx.lineTo(0,-len); cx.stroke();
+    // orb / gem on top, glowing, grows with p
+    const gr=4+p*11;
+    const gg=cx.createRadialGradient(0,-len,1,0,-len,gr*2.4);
+    gg.addColorStop(0,"rgba(230,200,255,.95)"); gg.addColorStop(1,"rgba(140,80,220,0)");
+    cx.fillStyle=gg; cx.beginPath(); cx.arc(0,-len,gr*2.4,0,Math.PI*2); cx.fill();
+    cx.beginPath(); cx.arc(0,-len,gr,0,Math.PI*2);
+    cx.fillStyle="#EFE0FF"; cx.fill(); cx.strokeStyle=goldC; cx.lineWidth=1.4; cx.stroke();
+    cx.restore();
+  }
+
+  // head + halo
+  const headR=15;
+  cx.beginPath(); cx.arc(0,-166,headR,0,Math.PI*2); cx.fillStyle=skinL; cx.fill();
+  cx.strokeStyle="#B98B5C"; cx.lineWidth=1.2; cx.stroke();
+  // hair
+  cx.fillStyle="#241436";
+  cx.beginPath(); cx.arc(0,-172,headR+2,Math.PI*1.05,Math.PI*1.95); cx.fill();
+  cx.beginPath();
+  cx.moveTo(-headR,-166); cx.quadraticCurveTo(-headR-6-p*10,-120,-headR-2-p*16,-70+Math.sin(t*.9)*4);
+  cx.quadraticCurveTo(-headR+2,-120,-headR+3,-166); cx.closePath(); cx.fill();
+  cx.beginPath();
+  cx.moveTo(headR,-166); cx.quadraticCurveTo(headR+6+p*10,-120,headR+2+p*16,-70+Math.sin(t*.9+1)*4);
+  cx.quadraticCurveTo(headR-2,-120,headR-3,-166); cx.closePath(); cx.fill();
+  // face
+  cx.fillStyle="#241436";
+  const eyeY=-167+(S.flinch>.2?1:0);
+  cx.fillRect(-6,eyeY,3,2.4); cx.fillRect(3,eyeY,3,2.4);
+  cx.strokeStyle="#241436"; cx.lineWidth=1.2;
+  cx.beginPath();
+  if(S.flinch>.2) cx.arc(0,-156,4,Math.PI,0);
+  else if(S.flex>.2) cx.arc(0,-159,4.4,0,Math.PI);
+  else { cx.moveTo(-3,-159); cx.lineTo(3,-159); }
+  cx.stroke();
+  // halo — grows and adds rings
+  if(p>.02){
+    const rings=1+Math.floor(p*3);
+    for(let i=0;i<rings;i++){
+      cx.beginPath();
+      cx.ellipse(0,-190-i*3, haloR-i*3, (haloR-i*3)*.3, 0, 0, Math.PI*2);
+      cx.strokeStyle=`rgba(232,196,104,${.9-i*.2})`; cx.lineWidth=2; cx.stroke();
+    }
+  }
+
+  cx.restore(); // scale/translate for figure
+
+  // floating pops
+  for(let i=S.pops.length-1;i>=0;i--){
+    const pp=S.pops[i]; pp.t+=.016;
+    if(pp.t>1.4){ S.pops.splice(i,1); continue; }
+    cx.save();
+    cx.globalAlpha=Math.max(0,1-pp.t/1.4);
+    cx.fillStyle=pp.c; cx.font="bold 14px Tahoma, sans-serif"; cx.textAlign="center";
+    cx.fillText(pp.txt, W*pp.x, H*pp.y - pp.t*58);
+    cx.restore();
+  }
+
+  cx.restore(); // outer translate
+
+  if(!S.ca){
+    cx.fillStyle="rgba(230,220,255,.55)"; cx.font="11px Tahoma, sans-serif"; cx.textAlign="center";
+    cx.fillText("no contract · she has not descended yet", W/2, H*.95);
+  }
+}
+requestAnimationFrame(draw);
+
+/* ── contract wiring ───────────────────────── */
+function buy(){
+  const u = C.links.buy || S.pairUrl || (S.ca ? "https://pump.fun/coin/"+S.ca : "");
+  if(u) open(u,"_blank","noopener");
+  else dialog("🤨","There is nothing to buy yet. She is still a rumor.");
+}
+$("buyBtn").onclick=buy;
+$("chartBtn").onclick=()=>{ if(S.pairUrl) open(S.pairUrl,"_blank","noopener"); };
+$("copyBtn").onclick=async()=>{
+  try{ await navigator.clipboard.writeText(S.ca); dialog("📋","Contract copied. The stars approve."); }
+  catch(_){ dialog("😑","Copy failed. Select it manually like it's 1998."); } };
+$("caBox").onclick=()=>{ if(S.ca) $("copyBtn").click(); };
+
+function setCA(ca){
+  S.ca=ca; S.mc=0; S.reps=0; S.wsOk=false; S.lastTrade=0;
+  const box=$("caBox");
+  if(ca){ box.textContent=ca; $("copyBtn").disabled=false; $("buyBtn").disabled=false; }
+  else{ box.textContent="Not deployed yet. She has not yet descended.";
+    $("copyBtn").disabled=true; $("buyBtn").disabled=true; }
+  paintStats(); conn();
+  if(ca){ pollDex(); connectWS(); }
+  else{ try{ ws&&ws.close(); }catch(_){} clearTimeout(timer); }
+}
+
+/* ── admin ─────────────────────────────────── */
+if(P.get("admin")===C.adminPin) openWin("wAdmin");
+addEventListener("keydown",e=>{ if(e.key==="`"&&(e.metaKey||e.ctrlKey)) openWin("wAdmin"); });
+$("adminIn").oninput=()=>{ const v=$("adminIn").value.trim();
+  $("adminErr").textContent=(!v||B58.test(v))?"":"Not a valid Solana mint address.";
+  $("adminJson").textContent=JSON.stringify({ca:v},null,2); };
+$("aPrev").onclick=()=>{ const v=$("adminIn").value.trim();
+  if(!B58.test(v)){ $("adminErr").textContent="Paste a valid mint address first."; return; }
+  localStorage.setItem("preview_ca",v); setCA(v); closeWin($("wAdmin"));
+  dialog("✨","Previewing in this browser only. Commit config.json to make it real."); };
+$("aCopy").onclick=async()=>{ try{ await navigator.clipboard.writeText($("adminJson").textContent);
+  dialog("📋","config.json copied. Paste, commit, done."); }catch(_){} };
+$("aClear").onclick=()=>{ localStorage.removeItem("preview_ca"); $("adminIn").value="";
+  $("adminJson").textContent=JSON.stringify({ca:""},null,2); setCA(""); };
+
+/* ── clock + branding ──────────────────────── */
+function clock(){ const d=new Date();
+  $("clock").textContent=d.toLocaleTimeString([], {hour:"numeric",minute:"2-digit"}); }
+clock(); setInterval(clock,10000);
+document.title=C.name+".exe";
+$("wGym").dataset.title=C.name+".exe — Divinity Monitor";
+$("wGym").querySelector(".t").textContent=C.name+".exe — Divinity Monitor";
+
+/* ── demo ──────────────────────────────────── */
+const DEMO = C.demo===true || P.get("demo")==="1";
+function startDemo(){
+  setCA("Dem0Asc3nd1111111111111111111111111111111111");
+  try{ ws&&ws.close(); }catch(_){} clearTimeout(timer);
+  S.wsOk=true; S.solUsd=210; S.liq=51000; S.vol=380000; conn();
+  let mc=140000;
+  setInterval(()=>{
+    const buy=Math.random()>.4;
+    const sol=+(Math.random()*Math.random()*7+.05).toFixed(3);
+    mc=Math.max(20000, mc*(1+(buy?1:-1)*sol/430));
+    S.chg5=Math.max(-45,Math.min(70,S.chg5+(buy?1:-1)*sol*1.3-S.chg5*.08));
+    S.buys5+=buy?1:0; S.sells5+=buy?0:1;
+    if(S.buys5+S.sells5>90){ S.buys5=Math.round(S.buys5*.6); S.sells5=Math.round(S.sells5*.6); }
+    S.price=mc/1e9;
+    onTrade({side:buy?"buy":"sell", sol, mcSol:mc/S.solUsd,
+      who:"Dem0"+Math.random().toString(36).slice(2,6)+"wa11et"});
+  }, 1000+Math.random()*1600);
+}
+
+/* ── boot ──────────────────────────────────── */
+fit(); renderTasks(); focusWin($("wGym")); paintStats(); conn();
+(async()=>{
+  if(DEMO){ startDemo(); return; }
+  const ca=await resolveCA(); if(ca) setCA(ca);
+  setInterval(pollDex,15000);
+})();
+setTimeout(()=>dialog("✨","Welcome. Buy pressure lets her ascend — wings, halo, staff, throne, all of it. Sell pressure grounds her. She remembers who sold.","Understood"),900);
+})();
+</script>
+</body>
+</html>
